@@ -2,15 +2,16 @@
 RocketRide sponsor adapter — orchestrates a hosted AI pipeline for
 migration Q&A.
 
-Real, end-to-end: ROCKETRIDE_API_KEY authenticates against RocketRide's
-staging endpoint (https://staging.rocketride.ai/ — their default
-https://cloud.rocketride.ai/ rejects this key). Each call to ask()
-defines a small pipeline (chat source -> llm_openai -> response, per
-RocketRide's documented pipeline schema), starts it with
-client.use(pipeline=...), and asks the question with client.chat(). The
-pipeline actually runs on RocketRide's infrastructure — this isn't a
-thin wrapper around a direct OpenAI call, it's OpenAI called *by* the
-RocketRide-hosted node.
+Real, end-to-end: ROCKETRIDE_API_KEY authenticates against
+https://staging.rocketride.ai/ — a staging endpoint given directly by
+the sponsor, not published in RocketRide's own docs (their public docs
+only mention the default https://cloud.rocketride.ai/, which rejects
+this key). Each call to ask() defines a small pipeline (chat source ->
+llm_openai -> response, per RocketRide's documented pipeline schema),
+starts it with client.use(pipeline=...), and asks the question with
+client.chat(). The pipeline actually runs on RocketRide's infrastructure
+— this isn't a thin wrapper around a direct OpenAI call, it's OpenAI
+called *by* the RocketRide-hosted node.
 
 A separate `prompt` component (tried first) turned out to drop the
 forwarded question — its output to the LLM didn't reliably carry the

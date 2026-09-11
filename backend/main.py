@@ -26,7 +26,7 @@ def _load_dataset(columns, rows):
     pipeline.reset_session()
     pipeline.SESSION["columns"] = columns
     pipeline.SESSION["rows"] = rows
-    return {"columns": columns, "row_count": len(rows), "sample_rows": rows[:5]}
+    return {"columns": columns, "row_count": len(rows), "sample_rows": rows}
 
 
 @app.get("/api/adapters")
