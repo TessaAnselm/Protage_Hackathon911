@@ -56,6 +56,18 @@ function show(id) {
   document.getElementById(id).hidden = false;
 }
 
+function clearElement(el) {
+  el.replaceChildren();
+}
+
+function appendText(parent, tag, text, className) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  el.textContent = text;
+  parent.appendChild(el);
+  return el;
+}
+
 async function api(path, opts) {
   const res = await fetch(path, opts);
   if (!res.ok) throw new Error(`${path} failed: ${res.status}`);
@@ -65,14 +77,15 @@ async function api(path, opts) {
 async function renderAdapters() {
   const data = await api("/api/adapters");
   const list = document.getElementById("adapter-list");
-  list.innerHTML = "";
+  clearElement(list);
   let anyConnected = false;
   for (const { key, label } of SPONSOR_ADAPTERS) {
     const live = !!data[key]?.live;
     if (live) anyConnected = true;
     const row = document.createElement("div");
     row.className = "adapter-row";
-    row.innerHTML = `<span>${label}</span><span class="pill ${live ? "connected" : "disconnected"}">${live ? "Connected" : "Disconnected"}</span>`;
+    appendText(row, "span", label);
+    appendText(row, "span", live ? "Connected" : "Disconnected", `pill ${live ? "connected" : "disconnected"}`);
     list.appendChild(row);
   }
   document.getElementById("adapter-note").textContent = anyConnected
@@ -95,21 +108,32 @@ function maskValue(column, value) {
 
 function renderPreviewTable() {
   const wrap = document.getElementById("preview-table");
-  const head = state.columns.map((c) => `<th>${c}</th>`).join("");
-  const body = state.sampleRows
-    .map((row) => `<tr>${state.columns.map((c) => `<td>${maskValue(c, row[c] ?? "")}</td>`).join("")}</tr>`)
-    .join("");
-  wrap.innerHTML = `<table class="mini"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+  clearElement(wrap);
+  const table = document.createElement("table");
+  table.className = "mini";
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  state.columns.forEach((column) => appendText(headerRow, "th", column));
+  thead.appendChild(headerRow);
+  const tbody = document.createElement("tbody");
+  state.sampleRows.forEach((row) => {
+    const tr = document.createElement("tr");
+    state.columns.forEach((column) => appendText(tr, "td", maskValue(column, row[column] ?? "")));
+    tbody.appendChild(tr);
+  });
+  table.append(thead, tbody);
+  wrap.appendChild(table);
 }
 
 function renderFileChip(name, meta) {
-  document.getElementById("file-chip-wrap").innerHTML = `
-    <div class="file-chip">
-      <span class="file-icon">&#128203;</span>
-      <span>${name}</span>
-      <span class="file-meta">${meta}</span>
-    </div>
-  `;
+  const wrap = document.getElementById("file-chip-wrap");
+  clearElement(wrap);
+  const chip = document.createElement("div");
+  chip.className = "file-chip";
+  appendText(chip, "span", "📋", "file-icon");
+  appendText(chip, "span", name);
+  appendText(chip, "span", meta, "file-meta");
+  wrap.appendChild(chip);
 }
 
 document.getElementById("file-input").addEventListener("change", async (e) => {
@@ -139,13 +163,13 @@ async function onDatasetLoaded(data) {
   for (const id of ["preview-section", "profile-section", "recall-section", "mapping-section", "migrate-section", "reconcile-section", "ask-section"]) {
     document.getElementById(id).hidden = true;
   }
-  document.getElementById("profile-panel").innerHTML = "";
-  document.getElementById("recall-panel").innerHTML = "";
-  document.getElementById("mapping-panel").innerHTML = "";
-  document.getElementById("reconcile-panel").innerHTML = "";
-  document.getElementById("ask-answer").innerHTML = "";
+  clearElement(document.getElementById("profile-panel"));
+  clearElement(document.getElementById("recall-panel"));
+  clearElement(document.getElementById("mapping-panel"));
+  clearElement(document.getElementById("reconcile-panel"));
+  clearElement(document.getElementById("ask-answer"));
   document.getElementById("ask-input").value = "";
-  document.getElementById("incoming-rack").innerHTML = "";
+  clearElement(document.getElementById("incoming-rack"));
   document.getElementById("loaded-count").textContent = "0";
   document.getElementById("quarantine-count").textContent = "0";
   resetMonster();
@@ -161,11 +185,22 @@ async function runProfile() {
   const profile = await api("/api/profile", { method: "POST" });
   show("profile-section");
   const sensitive = Object.entries(profile.sensitive_columns);
-  document.getElementById("profile-panel").innerHTML = `
-    <div>${profile.row_count} rows &middot; ${profile.duplicate_rows} duplicate rows &middot; ${profile.invalid_email_count} invalid emails</div>
-    <div class="muted small">engine: ${profile.engine}</div>
-    ${sensitive.length ? `<div class="muted small">sensitive columns: ${sensitive.map(([c, l]) => `${c} (${l})`).join(", ")}</div>` : ""}
-  `;
+  const profilePanel = document.getElementById("profile-panel");
+  clearElement(profilePanel);
+  appendText(
+    profilePanel,
+    "div",
+    `${profile.row_count} rows · ${profile.duplicate_rows} duplicate rows · ${profile.invalid_email_count} invalid emails`
+  );
+  appendText(profilePanel, "div", `engine: ${profile.engine}`, "muted small");
+  if (sensitive.length) {
+    appendText(
+      profilePanel,
+      "div",
+      `sensitive columns: ${sensitive.map(([column, label]) => `${column} (${label})`).join(", ")}`,
+      "muted small"
+    );
+  }
   setStep("profile", "done");
   await runRecall();
 }
@@ -176,14 +211,19 @@ async function runRecall() {
   const recall = await api("/api/recall");
   show("recall-section");
   const panel = document.getElementById("recall-panel");
+  clearElement(panel);
   if (recall.hydra_previous_mapping || recall.replayable_play || recall.cognee_notes.length) {
-    panel.innerHTML = `
-      ${recall.replayable_play ? '<div>&#9889; A learned play matches this file shape.</div>' : ""}
-      ${recall.hydra_previous_mapping ? '<div>HydraDB found a prior mapping for these exact columns.</div>' : ""}
-      ${recall.cognee_notes.length ? `<div class="muted small">Cognee: ${recall.cognee_notes[0]}</div>` : ""}
-    `;
+    if (recall.replayable_play) {
+      appendText(panel, "div", "A learned play matches this file shape.");
+    }
+    if (recall.hydra_previous_mapping) {
+      appendText(panel, "div", "HydraDB found a prior mapping for these exact columns.");
+    }
+    if (recall.cognee_notes.length) {
+      appendText(panel, "div", `Cognee: ${recall.cognee_notes[0]}`, "muted small");
+    }
   } else {
-    panel.innerHTML = `<div class="muted">No prior migrations recognized — this looks like a new file shape.</div>`;
+    appendText(panel, "div", "No prior migrations recognized — this looks like a new file shape.", "muted");
   }
   setStep("recall", "done");
   await runSuggestMappings();
@@ -218,56 +258,104 @@ function decideRow(idx, decision) {
 function renderMappingTable() {
   const panel = document.getElementById("mapping-panel");
   const options = state.targetSchema.map((f) => f.field);
-  const rows = state.mapping
-    .map((m, i) => {
-      const pct = Math.round((m.confidence || 0) * 100);
-      const opts = [`<option value="">— ignore —</option>`]
-        .concat(options.map((o) => `<option value="${o}" ${o === m.target_field ? "selected" : ""}>${o}</option>`))
-        .join("");
-      const rowClass = m.approved ? "approved" : m.rejected ? "rejected" : "";
-      return `<tr class="${rowClass}">
-        <td>${m.source_field}</td>
-        <td><select data-idx="${i}" ${m.rejected ? "disabled" : ""}>${opts}</select></td>
-        <td><span class="confidence-bar" style="width:${Math.max(pct, 6)}px"></span> ${pct}%</td>
-        <td class="muted small">${m.reasoning || ""}</td>
-        <td class="decision-cell">
-          <button type="button" class="decision-btn approve ${m.approved ? "active" : ""}" data-idx="${i}" data-decision="approved">Approve</button>
-          <button type="button" class="decision-btn reject ${m.rejected ? "active" : ""}" data-idx="${i}" data-decision="rejected">Reject</button>
-        </td>
-      </tr>`;
-    })
-    .join("");
   const allDecided = state.mapping.every((m) => m.rejected || (m.approved && m.target_field));
   const decidedCount = state.mapping.filter((m) => m.approved || m.rejected).length;
-  panel.innerHTML = `
-    <div class="table-wrap">
-      <table class="mini">
-        <thead><tr><th>Source</th><th>Target</th><th>Confidence</th><th>Reasoning</th><th>Decision</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-    <div class="mapping-actions">
-      <button id="approve-btn" class="btn-primary" ${allDecided ? "" : "disabled"}>Start Migration</button>
-      <span class="muted small">${allDecided ? "Approved fields will migrate; rejected fields will quarantine." : `${decidedCount}/${state.mapping.length} fields decided — approve with a target or reject each one.`}</span>
-    </div>
-  `;
-  panel.querySelectorAll("select").forEach((sel) => {
-    sel.addEventListener("change", (e) => {
+
+  clearElement(panel);
+  const wrap = document.createElement("div");
+  wrap.className = "table-wrap";
+  const table = document.createElement("table");
+  table.className = "mini";
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  ["Source", "Target", "Confidence", "Reasoning", "Decision"].forEach((label) => appendText(headerRow, "th", label));
+  thead.appendChild(headerRow);
+
+  const tbody = document.createElement("tbody");
+  state.mapping.forEach((m, i) => {
+    const pct = Math.round((m.confidence || 0) * 100);
+    const tr = document.createElement("tr");
+    tr.className = m.approved ? "approved" : m.rejected ? "rejected" : "";
+    appendText(tr, "td", m.source_field);
+
+    const targetCell = document.createElement("td");
+    const select = document.createElement("select");
+    select.dataset.idx = String(i);
+    select.disabled = m.rejected;
+    const ignoreOption = document.createElement("option");
+    ignoreOption.value = "";
+    ignoreOption.textContent = "— ignore —";
+    select.appendChild(ignoreOption);
+    options.forEach((field) => {
+      const option = document.createElement("option");
+      option.value = field;
+      option.textContent = field;
+      option.selected = field === m.target_field;
+      select.appendChild(option);
+    });
+    select.addEventListener("change", (e) => {
       const idx = Number(e.target.dataset.idx);
       state.mapping[idx].target_field = e.target.value || null;
     });
+    targetCell.appendChild(select);
+    tr.appendChild(targetCell);
+
+    const confidenceCell = document.createElement("td");
+    const bar = document.createElement("span");
+    bar.className = "confidence-bar";
+    bar.style.width = `${Math.max(pct, 6)}px`;
+    confidenceCell.append(bar, ` ${pct}%`);
+    tr.appendChild(confidenceCell);
+
+    appendText(tr, "td", m.reasoning || "", "muted small");
+
+    const decisionCell = document.createElement("td");
+    decisionCell.className = "decision-cell";
+    [
+      { decision: "approved", label: "Approve", className: "approve" },
+      { decision: "rejected", label: "Reject", className: "reject" },
+    ].forEach(({ decision, label, className }) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `decision-btn ${className} ${m[decision] ? "active" : ""}`;
+      btn.dataset.idx = String(i);
+      btn.dataset.decision = decision;
+      btn.textContent = label;
+      btn.addEventListener("click", (e) => decideRow(Number(e.target.dataset.idx), e.target.dataset.decision));
+      decisionCell.appendChild(btn);
+    });
+    tr.appendChild(decisionCell);
+    tbody.appendChild(tr);
   });
-  panel.querySelectorAll(".decision-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => decideRow(Number(e.target.dataset.idx), e.target.dataset.decision));
-  });
+  table.append(thead, tbody);
+  wrap.appendChild(table);
+  panel.appendChild(wrap);
+
+  const actions = document.createElement("div");
+  actions.className = "mapping-actions";
+  const startBtn = document.createElement("button");
+  startBtn.id = "approve-btn";
+  startBtn.className = "btn-primary";
+  startBtn.disabled = !allDecided;
+  startBtn.textContent = "Start Migration";
+  actions.appendChild(startBtn);
+  appendText(
+    actions,
+    "span",
+    allDecided
+      ? "Approved fields will migrate; rejected fields will quarantine."
+      : `${decidedCount}/${state.mapping.length} fields decided — approve with a target or reject each one.`,
+    "muted small"
+  );
+  panel.appendChild(actions);
   if (allDecided) {
-    document.getElementById("approve-btn").addEventListener("click", approveAndMigrate);
+    startBtn.addEventListener("click", approveAndMigrate);
   }
 }
 
 function buildIncomingRack() {
   const rack = document.getElementById("incoming-rack");
-  rack.innerHTML = "";
+  clearElement(rack);
   for (let i = 0; i < state.rowCount; i++) {
     const chip = document.createElement("div");
     chip.className = "row-chip";
@@ -357,15 +445,49 @@ async function runReconcile() {
   show("reconcile-section");
   const report = await api("/api/reconcile", { method: "POST" });
   const panel = document.getElementById("reconcile-panel");
-  panel.innerHTML = `
-    <div class="reconcile-card ${report.reconciled ? "ok" : "bad"}">
-      <div><strong>${report.loaded_count}</strong> loaded / <strong>${report.quarantined_count}</strong> quarantined out of ${report.source_row_count} source rows</div>
-      ${report.rejected_data_count ? `<div class="muted small">${report.rejected_data_count} rejected source values were quarantined by the approval gate.</div>` : ""}
-      <div class="muted small">${report.reconciled ? "Reconciled: modern DB count matches." : "Mismatch detected between processed and loaded counts."}</div>
-      ${report.quarantine_reasons.length ? `<ul class="muted small">${report.quarantine_reasons.map((q) => `<li>Row ${q.index + 1}: ${q.reasons.join("; ")}</li>`).join("")}</ul>` : ""}
-      ${report.rejected_data?.length ? `<ul class="muted small">${report.rejected_data.slice(0, 6).map((q) => `<li>Row ${q.index + 1}: ${q.source_field} quarantined (${q.reason})</li>`).join("")}</ul>` : ""}
-    </div>
-  `;
+  clearElement(panel);
+  const card = document.createElement("div");
+  card.className = `reconcile-card ${report.reconciled ? "ok" : "bad"}`;
+  const summary = document.createElement("div");
+  const loaded = document.createElement("strong");
+  loaded.textContent = String(report.loaded_count);
+  const quarantined = document.createElement("strong");
+  quarantined.textContent = String(report.quarantined_count);
+  summary.append(
+    loaded,
+    " loaded / ",
+    quarantined,
+    ` quarantined out of ${report.source_row_count} source rows`
+  );
+  card.appendChild(summary);
+  if (report.rejected_data_count) {
+    appendText(card, "div", `${report.rejected_data_count} rejected source values were quarantined by the approval gate.`, "muted small");
+  }
+  appendText(
+    card,
+    "div",
+    report.reconciled
+      ? "Reconciled: modern DB count matches."
+      : "Mismatch detected between processed and loaded counts.",
+    "muted small"
+  );
+  if (report.quarantine_reasons.length) {
+    const list = document.createElement("ul");
+    list.className = "muted small";
+    report.quarantine_reasons.forEach((q) => {
+      appendText(list, "li", `Row ${q.index + 1}: ${q.reasons.join("; ")}`);
+    });
+    card.appendChild(list);
+  }
+  if (report.rejected_data?.length) {
+    const list = document.createElement("ul");
+    list.className = "muted small";
+    report.rejected_data.slice(0, 6).forEach((q) => {
+      appendText(list, "li", `Row ${q.index + 1}: ${q.source_field} quarantined (${q.reason})`);
+    });
+    card.appendChild(list);
+  }
+  panel.appendChild(card);
   setStep("reconcile", "done");
   celebrateMonster();
   spawnConfetti();
@@ -383,16 +505,19 @@ async function askQuestion() {
   const answerBox = document.getElementById("ask-answer");
   const btn = document.getElementById("ask-btn");
   btn.disabled = true;
-  answerBox.innerHTML = `<div class="muted small">Asking RocketRide…</div>`;
+  clearElement(answerBox);
+  appendText(answerBox, "div", "Asking RocketRide…", "muted small");
   try {
     const { answer } = await api("/api/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question }),
     });
-    answerBox.innerHTML = `<div class="ask-answer-card">${answer}</div>`;
+    clearElement(answerBox);
+    appendText(answerBox, "div", answer, "ask-answer-card");
   } catch (err) {
-    answerBox.innerHTML = `<div class="muted small">RocketRide couldn't answer that: ${err.message}</div>`;
+    clearElement(answerBox);
+    appendText(answerBox, "div", `RocketRide couldn't answer that: ${err.message}`, "muted small");
   } finally {
     btn.disabled = false;
   }
