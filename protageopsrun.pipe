@@ -1,0 +1,37 @@
+{
+  "project_id": "4389a622-fede-407c-aa7f-b95373efcc96",
+  "components": [
+    {
+      "id": "webhook_1",
+      "provider": "webhook",
+      "name": "Protageops",
+      "config": {
+        "hideForm": true,
+        "mode": "Source",
+        "parameters": {},
+        "type": "webhook",
+        "name": "Webhook"
+      },
+      "ui": {
+        "position": {
+          "x": 550,
+          "y": 330
+        },
+        "measured": {
+          "width": 150,
+          "height": 144
+        },
+        "nodeType": "default",
+        "formDataValid": true
+      }
+    }
+  ],
+  "version": 1,
+  "docRevision": 6,
+  "isLocked": false,
+  "snapToGrid": true,
+  "snapGridSize": [
+    10,
+    10
+  ]
+}

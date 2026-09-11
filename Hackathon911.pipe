@@ -1,0 +1,37 @@
+{
+  "project_id": "2c5666fd-54b9-40a4-a327-8a957f7d5b27",
+  "components": [
+    {
+      "id": "dropper_1",
+      "provider": "dropper",
+      "name": "Protage Data Migration",
+      "config": {
+        "hideForm": true,
+        "mode": "Source",
+        "parameters": {},
+        "type": "dropper",
+        "name": "Dropper"
+      },
+      "ui": {
+        "position": {
+          "x": 550,
+          "y": 330
+        },
+        "measured": {
+          "width": 150,
+          "height": 58
+        },
+        "nodeType": "default",
+        "formDataValid": true
+      }
+    }
+  ],
+  "version": 1,
+  "docRevision": 3,
+  "isLocked": false,
+  "snapToGrid": true,
+  "snapGridSize": [
+    10,
+    10
+  ]
+}
