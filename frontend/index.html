@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MigrationOps</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="mascot-card">
+        <div id="monster-speech" class="monster-speech">Hi! Send me a CSV.</div>
+        <img id="monster-img" class="monster-wave" src="assets/monster-scan-complete.png" alt="Migration monster" />
+        <div class="chomp-fx" id="chomp-fx"></div>
+        <div id="mascot-status" class="mascot-status">Idle &mdash; waiting for a file</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sidebar-heading">Sponsor Adapters</div>
+      <div id="adapter-list" class="adapter-list"></div>
+      <div id="adapter-note" class="muted small"></div>
+    </aside>
+
+    <main class="content">
+      <div class="hero">
+        <div class="hero-tag">Secure Customer Migration Control Plane</div>
+        <h1>MigrationOps</h1>
+        <p>Standardize legacy customer data with visible controls, deterministic processing, and a required human approval gate.</p>
+      </div>
+
+      <div class="feature-pills">
+        <span class="pill outline">PII Masked</span>
+        <span class="pill outline">Human Approval Required</span>
+        <span class="pill outline">Source Read-Only</span>
+      </div>
+
+      <div class="stepper" id="stepper">
+        <div class="step" data-step="upload">Upload</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step" data-step="profile">Profile</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step" data-step="recall">Recall</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step" data-step="map">Map</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step" data-step="approve">Approve</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step" data-step="migrate">Migrate</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step" data-step="reconcile">Reconcile</div>
+        <div class="arrow">&rarr;</div>
+        <div class="step" data-step="learn">Learn</div>
+      </div>
+
+      <section class="card">
+        <h2>1. Upload source file</h2>
+        <div class="muted small">Legacy customer CSV</div>
+        <div class="upload-row">
+          <label class="file-btn">
+            Choose CSV
+            <input type="file" id="file-input" accept=".csv" hidden />
+          </label>
+          <button id="sample-btn" class="btn-secondary">Use sample vendor file</button>
+        </div>
+        <div id="file-chip-wrap"></div>
+      </section>
+
+      <section class="card" id="preview-section" hidden>
+        <h2>2. Masked preview</h2>
+        <div class="muted small">Sensitive columns are masked here; full values are used only during migration.</div>
+        <div id="preview-table" class="table-wrap"></div>
+      </section>
+
+      <section class="card" id="profile-section" hidden>
+        <h2>3. Profile &amp; secure</h2>
+        <div id="profile-panel"></div>
+      </section>
+
+      <section class="card" id="recall-section" hidden>
+        <h2>4. Recall previous mappings</h2>
+        <div id="recall-panel"></div>
+      </section>
+
+      <section class="card" id="mapping-section" hidden>
+        <h2>5. Generated mappings &mdash; human approval required</h2>
+        <div id="mapping-panel"></div>
+      </section>
+
+      <section class="card" id="migrate-section" hidden>
+        <h2>6. Migrate &amp; load</h2>
+        <div class="stage">
+          <div class="lane lane-source">
+            <div class="lane-label">Legacy file</div>
+            <div id="incoming-rack" class="rack"></div>
+          </div>
+          <div class="stage-arrow">&rarr;</div>
+          <div class="lane lane-targets">
+            <div class="bin bin-good">
+              <div class="bin-label">Modern DB</div>
+              <div class="bin-count" id="loaded-count">0</div>
+            </div>
+            <div class="bin bin-bad">
+              <div class="bin-label">Quarantine items</div>
+              <div class="bin-count" id="quarantine-count">0</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="reconcile-section" hidden>
+        <h2>7. Reconcile &amp; learn</h2>
+        <div id="reconcile-panel"></div>
+      </section>
+
+      <section class="card" id="ask-section" hidden>
+        <h2>Ask about this migration</h2>
+        <div class="muted small">Answered by a RocketRide-hosted AI pipeline, grounded in this run's reconciliation report.</div>
+        <div class="ask-row">
+          <input type="text" id="ask-input" placeholder="e.g. Why was row 3 quarantined?" />
+          <button id="ask-btn" class="btn-primary">Ask</button>
+        </div>
+        <div id="ask-answer"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

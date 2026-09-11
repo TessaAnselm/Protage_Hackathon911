@@ -1,0 +1,39 @@
+[
+  {
+    "signature": "country_cd|cust_id|email_addr|full_nm|phone_num",
+    "columns": [
+      "cust_id",
+      "full_nm",
+      "email_addr",
+      "phone_num",
+      "country_cd"
+    ],
+    "mapping": [
+      {
+        "source_field": "full_nm",
+        "target_field": "full_name",
+        "confidence": 1,
+        "reasoning": "Direct mapping based on naming convention.",
+        "approved": true,
+        "rejected": false
+      },
+      {
+        "source_field": "email_addr",
+        "target_field": "email",
+        "confidence": 0.9,
+        "reasoning": "Close match, but requires format validation.",
+        "approved": true,
+        "rejected": false
+      },
+      {
+        "source_field": "phone_num",
+        "target_field": "phone",
+        "confidence": 1,
+        "reasoning": "Direct mapping based on naming convention.",
+        "approved": true,
+        "rejected": false
+      }
+    ],
+    "captured_at": 1789165009.8711
+  }
+]

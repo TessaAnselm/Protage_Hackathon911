@@ -1,0 +1,215 @@
+[
+  {
+    "signature": "country_cd|cust_id|email_addr|full_nm|phone_num",
+    "columns": [
+      "cust_id",
+      "full_nm",
+      "email_addr",
+      "phone_num",
+      "country_cd"
+    ],
+    "mapping": [
+      {
+        "source_field": "cust_id",
+        "target_field": "customer_id",
+        "confidence": 1.0,
+        "reasoning": "cust_id directly maps to customer_id."
+      },
+      {
+        "source_field": "full_nm",
+        "target_field": "full_name",
+        "confidence": 1.0,
+        "reasoning": "full_nm is a direct abbreviation for full_name."
+      },
+      {
+        "source_field": "email_addr",
+        "target_field": "email",
+        "confidence": 0.9,
+        "reasoning": "email_addr is a common term for email, but needs validation for format."
+      },
+      {
+        "source_field": "phone_num",
+        "target_field": "phone",
+        "confidence": 1.0,
+        "reasoning": "phone_num directly corresponds to phone."
+      },
+      {
+        "source_field": "country_cd",
+        "target_field": "country",
+        "confidence": 1.0,
+        "reasoning": "country_cd is a direct abbreviation for country."
+      }
+    ],
+    "outcome": {
+      "source_row_count": 7,
+      "processed_count": 7,
+      "loaded_count": 4,
+      "quarantined_count": 3,
+      "loaded_in_db_count": 4,
+      "reconciled": true,
+      "quarantine_reasons": [
+        {
+          "index": 2,
+          "reasons": [
+            "missing required field 'full_name'"
+          ]
+        },
+        {
+          "index": 3,
+          "reasons": [
+            "invalid email 'wei.zhang(at)example.com'"
+          ]
+        },
+        {
+          "index": 4,
+          "reasons": [
+            "duplicate customer_id '1001'"
+          ]
+        }
+      ]
+    },
+    "saved_at": 1789158520.409869
+  },
+  {
+    "signature": "country_cd|cust_id|email_addr|full_nm|phone_num",
+    "columns": [
+      "cust_id",
+      "full_nm",
+      "email_addr",
+      "phone_num",
+      "country_cd"
+    ],
+    "mapping": [
+      {
+        "source_field": "cust_id",
+        "target_field": "customer_id",
+        "confidence": 1,
+        "reasoning": "cust_id directly maps to customer_id."
+      },
+      {
+        "source_field": "full_nm",
+        "target_field": "full_name",
+        "confidence": 1,
+        "reasoning": "full_nm is a direct abbreviation for full_name."
+      },
+      {
+        "source_field": "email_addr",
+        "target_field": "email",
+        "confidence": 0.9,
+        "reasoning": "email_addr is a common term for email, but needs validation for format."
+      },
+      {
+        "source_field": "phone_num",
+        "target_field": "phone",
+        "confidence": 1,
+        "reasoning": "phone_num directly corresponds to phone."
+      },
+      {
+        "source_field": "country_cd",
+        "target_field": "country",
+        "confidence": 1,
+        "reasoning": "country_cd is a direct abbreviation for country."
+      }
+    ],
+    "outcome": {
+      "source_row_count": 7,
+      "processed_count": 7,
+      "loaded_count": 4,
+      "quarantined_count": 3,
+      "loaded_in_db_count": 4,
+      "reconciled": true,
+      "quarantine_reasons": [
+        {
+          "index": 2,
+          "reasons": [
+            "missing required field 'full_name'"
+          ]
+        },
+        {
+          "index": 3,
+          "reasons": [
+            "invalid email 'wei.zhang(at)example.com'"
+          ]
+        },
+        {
+          "index": 4,
+          "reasons": [
+            "duplicate customer_id '1001'"
+          ]
+        }
+      ]
+    },
+    "saved_at": 1789160104.8777301
+  },
+  {
+    "signature": "country_cd|cust_id|email_addr|full_nm|phone_num",
+    "columns": [
+      "cust_id",
+      "full_nm",
+      "email_addr",
+      "phone_num",
+      "country_cd"
+    ],
+    "mapping": [
+      {
+        "source_field": "cust_id",
+        "target_field": "customer_id",
+        "confidence": 1,
+        "reasoning": "cust_id directly maps to customer_id."
+      },
+      {
+        "source_field": "full_nm",
+        "target_field": "full_name",
+        "confidence": 1,
+        "reasoning": "full_nm is a direct abbreviation for full_name."
+      },
+      {
+        "source_field": "email_addr",
+        "target_field": "email",
+        "confidence": 0.9,
+        "reasoning": "email_addr is a common term for email, but needs validation for format."
+      },
+      {
+        "source_field": "phone_num",
+        "target_field": "phone",
+        "confidence": 1,
+        "reasoning": "phone_num directly corresponds to phone."
+      },
+      {
+        "source_field": "country_cd",
+        "target_field": "country",
+        "confidence": 1,
+        "reasoning": "country_cd is a direct abbreviation for country."
+      }
+    ],
+    "outcome": {
+      "source_row_count": 7,
+      "processed_count": 7,
+      "loaded_count": 4,
+      "quarantined_count": 3,
+      "loaded_in_db_count": 4,
+      "reconciled": true,
+      "quarantine_reasons": [
+        {
+          "index": 2,
+          "reasons": [
+            "missing required field 'full_name'"
+          ]
+        },
+        {
+          "index": 3,
+          "reasons": [
+            "invalid email 'wei.zhang(at)example.com'"
+          ]
+        },
+        {
+          "index": 4,
+          "reasons": [
+            "duplicate customer_id '1001'"
+          ]
+        }
+      ]
+    },
+    "saved_at": 1789161439.481123
+  }
+]

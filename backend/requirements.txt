@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-dotenv
+python-multipart
+openai
+cognee
+httpx
+hotdata-framework
+hydradb-sdk
+rocketride
