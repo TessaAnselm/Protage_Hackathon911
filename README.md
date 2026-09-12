@@ -25,7 +25,9 @@ HotData, RocketRide, and Modiqo Rote** — all shown `Connected` before a file
 is even chosen. (Snyk runs as a separate CLI/security-scan endpoint and
 OpenAI's key is used silently during Map, so neither gets a tile here.)
 
-![Upload screen with pipeline stages and sponsor adapters](images/upload-pipeline-overview.png)
+<p align="center">
+  <img src="images/upload-pipeline-overview.png" alt="Upload screen with pipeline stages and sponsor adapters" width="720">
+</p>
 
 **2. Recall → three sponsor tools query memory at once.** Once a file loads,
 this is the exact moment `backend/main.py`'s `/recall` step fires off
@@ -38,7 +40,9 @@ preview** redacts emails and phone numbers on screen — full values are only
 used internally once Migrate actually runs — so a human can sanity-check row
 shapes without seeing raw customer PII.
 
-![Masked preview of the uploaded CSV during the Recall step](images/recall-masked-preview.png)
+<p align="center">
+  <img src="images/recall-masked-preview.png" alt="Masked preview of the uploaded CSV during the Recall step" width="720">
+</p>
 
 **3. Map → OpenAI drafts it, a human decides.** `llm_adapter.suggest_mappings`
 (**OpenAI**, via `LLM_API_KEY`) proposes a target field, a confidence score,
@@ -49,7 +53,9 @@ this screen: each row needs an explicit **Approve** or **Reject**, which is
 the human-approval-gate promise from the top of this README actually
 rendered as a button, not a config flag.
 
-![LLM-suggested field mappings awaiting per-field human approval](images/map-approve-fields.png)
+<p align="center">
+  <img src="images/map-approve-fields.png" alt="LLM-suggested field mappings awaiting per-field human approval" width="720">
+</p>
 
 **4. Migrate & Reconcile → the write-back, then RocketRide answers for it.**
 After approval, rows split deterministically into the modern DB or a
@@ -63,7 +69,9 @@ pipeline (`chat → llm_openai → response`) running on RocketRide's own
 infrastructure, grounded in this run's reconciliation report, not a local
 LLM call — so "Why was row 3 quarantined?" gets an exact, sourced answer.
 
-![Migrate, reconcile, and RocketRide-backed Q&A on the finished run](images/migrate-reconcile-ask.png)
+<p align="center">
+  <img src="images/migrate-reconcile-ask.png" alt="Migrate, reconcile, and RocketRide-backed Q&amp;A on the finished run" width="720">
+</p>
 
 **5. Ask again → the round trip is real, not canned.** Typing a second
 question ("Why were the rows quarantined") shows the box sitting in an
@@ -75,9 +83,13 @@ phrasing, which is what a live model call grounded in the reconciliation
 report looks like: the wording changes even though the underlying data
 doesn't.
 
-| In flight | Resolved |
-|---|---|
-| ![RocketRide request in flight for "Why were the rows quarantined"](images/ask-migration-loading.png) | ![RocketRide's resolved answer listing each quarantine reason](images/ask-migration-answer.png) |
+<table align="center">
+  <tr><th>In flight</th><th>Resolved</th></tr>
+  <tr>
+    <td><img src="images/ask-migration-loading.png" alt="RocketRide request in flight for &quot;Why were the rows quarantined&quot;" width="360"></td>
+    <td><img src="images/ask-migration-answer.png" alt="RocketRide's resolved answer listing each quarantine reason" width="360"></td>
+  </tr>
+</table>
 
 **Not pictured in the flow: Snyk — run locally, and it caught a real bug.**
 Snyk isn't wired into the web UI at all — by design, a dependency/code
@@ -112,7 +124,9 @@ conflict blocking the dependency scan), and the GitHub-hosted
 until these local fixes are pushed. Full commands, raw scan output, and the
 before/after breakdown are in [`SNYK_TESTING.md`](SNYK_TESTING.md).
 
-![Local Snyk Code score after the DOM XSS fix: 0 issues, projected 10/10](images/security-score-after-fix.png)
+<p align="center">
+  <img src="images/security-score-after-fix.png" alt="Local Snyk Code score after the DOM XSS fix: 0 issues, projected 10/10" width="600">
+</p>
 
 ## Demo Video
 
