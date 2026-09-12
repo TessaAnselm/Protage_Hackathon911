@@ -5,6 +5,10 @@ recall prior mappings, generate new field mappings with human approval, migrate 
 then learn from the outcome. A monster mascot on the frontend "eats" each record as it's
 processed and sorts it into the modern DB or quarantine.
 
+## Demo Video
+
+[Watch the demo video](https://drive.google.com/file/d/1vcnI7dyBww6r1zEI4ye3SYwGKgBUZ578/view?usp=sharing)
+
 ## Run it
 
 ```
