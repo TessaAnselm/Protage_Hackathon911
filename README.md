@@ -1,9 +1,58 @@
-# MigrationOps
+# ProtageOps
 
-Secure, self-improving migration pipeline: upload a vendor file, profile and secure it,
-recall prior mappings, generate new field mappings with human approval, migrate + reconcile,
-then learn from the outcome. A monster mascot on the frontend "eats" each record as it's
-processed and sorts it into the modern DB or quarantine.
+Secure, self-improving migration control plane for onboarding messy vendor data. A vendor
+sends a CSV with columns like `cust_id`, `full_nm`, `email_addr` — ProtageOps profiles it,
+flags sensitive or invalid data, recalls how a similarly-shaped file was mapped before,
+drafts a field mapping with an LLM, requires a human to explicitly **Approve or Reject
+every field**, migrates the approved data while quarantining the rest, reconciles the
+counts, and remembers the outcome so the next file from that vendor maps itself faster.
+
+A monster mascot on the frontend "eats" each record live as it's processed, sorting it
+into the modern DB or the quarantine bin. Once a run finishes, you can ask it plain-language
+questions about that migration ("why was row 3 quarantined?") and the answer comes back
+from a real AI pipeline hosted on RocketRide's infrastructure, not a local call.
+
+## Screenshots
+
+**1. Upload → sponsor tools go live before a row is read.** Every run walks
+the same eight visible stages — `Upload → Profile → Recall → Map → Approve →
+Migrate → Reconcile → Learn` — and the three badges above it (`PII Masked`,
+`Human Approval Required`, `Source Read-Only`) are the security contract, not
+decoration: the source file is never mutated, sensitive columns are never
+shown raw, and nothing loads without a person clicking Approve. The **Sponsor
+Adapters** panel on the left is a live health check on **Cognee, HydraDB,
+HotData, RocketRide, and Modiqo Rote** — all shown `Connected` before a file
+is even chosen. (Snyk runs as a separate CLI/security-scan endpoint and
+OpenAI's key is used silently during Map, so neither gets a tile here.)
+
+![Upload screen with pipeline stages and sponsor adapters](images/Screenshot%202026-09-11%20at%204.21.23%20PM.png)
+
+**2. Recall → three sponsor tools query memory at once.** Once a file loads,
+this is the exact moment `backend/main.py`'s `/recall` step fires off
+**HydraDB** (`find_similar` — semantic search over past runs), **Cognee**
+(`recall_context` — the mapping-memory adapter, shown here as "Looking for
+familiar shapes"), and **Modiqo Rote** (`find_play` — checks for a
+previously-crystallized play) in the same call, so whichever remembers this
+vendor's shape first seeds the mapping suggestion. Underneath, the **masked
+preview** redacts emails and phone numbers on screen — full values are only
+used internally once Migrate actually runs — so a human can sanity-check row
+shapes without seeing raw customer PII.
+
+![Masked preview of the uploaded CSV during the Recall step](images/Screenshot%202026-09-11%20at%2011.26.06%20PM.png)
+
+**3. Migrate & Reconcile → the write-back, then RocketRide answers for it.**
+After approval, rows split deterministically into the modern DB or a
+quarantine bin (`4 loaded / 3 quarantined out of 7 source rows`, with a
+specific reason attached to every quarantined row), and behind the scenes
+**Cognee** (`remember_mapping`), **HydraDB** (`save_migration`), and
+**Modiqo Rote** (`capture_play`) all persist this run so the next file from
+the same vendor maps itself faster — the "Learn" stage happening live. The
+"Ask about this migration" box is answered by **RocketRide**: a real
+pipeline (`chat → llm_openai → response`) running on RocketRide's own
+infrastructure, grounded in this run's reconciliation report, not a local
+LLM call — so "Why was row 3 quarantined?" gets an exact, sourced answer.
+
+![Migrate, reconcile, and RocketRide-backed Q&A on the finished run](images/Screenshot%202026-09-11%20at%204.23.41%20PM.png)
 
 ## Demo Video
 
