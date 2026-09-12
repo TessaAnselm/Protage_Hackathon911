@@ -1,0 +1,412 @@
+<title>ProtageOps Pitch</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ink:#081019;
+    --panel:#0f1e27;
+    --panel-2:#132531;
+    --line:#1e3540;
+    --text:#eef6f4;
+    --muted:#8fa5aa;
+    --mint:#6fe0cf;
+    --mint-dim:#2c4a45;
+    --amber:#f2a765;
+    --good:#34d399;
+    --bad:#f2a2ab;
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;
+    overflow:hidden;
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.72rem;
+    font-weight:600;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--mint);
+  }
+  h1,h2{
+    font-family:"Big Shoulders Display",system-ui,sans-serif;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.01em;
+    text-wrap:balance;
+    margin:0;
+  }
+  p{ line-height:1.55; margin:0; }
+  .mono{ font-family:"IBM Plex Mono",ui-monospace,monospace; }
+
+  /* faint schematic backdrop, consistent across slides */
+  .slide{
+    position:relative;
+    scroll-snap-align:start;
+    height:100vh;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:36px 6vw 76px;
+    background:
+      radial-gradient(1100px 620px at 82% -8%, rgba(111,224,207,.10), transparent 60%),
+      radial-gradient(900px 520px at -10% 108%, rgba(242,167,101,.07), transparent 55%),
+      var(--ink);
+    overflow:hidden;
+  }
+  .slide::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(to right, rgba(111,224,207,.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(111,224,207,.05) 1px, transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(900px 600px at 50% 40%, black, transparent 75%);
+    pointer-events:none;
+  }
+  .slide-inner{
+    position:relative;
+    width:100%;
+    max-width:1180px;
+    max-height:100%;
+    display:flex;
+    flex-direction:column;
+    gap:min(22px, 2.2vh);
+  }
+
+  .deck{
+    height:100vh;
+    overflow-y:scroll;
+    scroll-snap-type:y mandatory;
+    scrollbar-width:none;
+  }
+  .deck::-webkit-scrollbar{ display:none; }
+
+  /* ---- shared bits ---- */
+  .pill{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:"IBM Plex Mono",monospace;
+    font-size:.7rem; font-weight:600; letter-spacing:.04em;
+    padding:4px 10px; border-radius:999px;
+    border:1px solid var(--mint-dim);
+    color:var(--mint);
+    background:rgba(111,224,207,.06);
+    white-space:nowrap;
+  }
+  .pill.good{ border-color:var(--good); color:#8ff0c9; background:rgba(52,211,153,.09); }
+  .pill.warn{ border-color:var(--amber); color:var(--amber); background:rgba(242,167,101,.09); }
+  .pill .dot{ width:6px; height:6px; border-radius:999px; background:currentColor; }
+  .pill.good .dot{ animation:blink 1.6s ease-in-out infinite; }
+  @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:20px;
+  }
+
+  /* ---- nav ---- */
+  .navbar{
+    position:fixed; left:0; right:0; bottom:20px;
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    z-index:50;
+    pointer-events:none;
+  }
+  .navbar > *{ pointer-events:auto; }
+  .navbtn{
+    width:38px; height:38px; border-radius:999px;
+    border:1px solid var(--line); background:var(--panel-2); color:var(--text);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:1rem;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .navbtn:hover{ border-color:var(--mint); color:var(--mint); }
+  .navbtn:disabled{ opacity:.3; cursor:default; }
+  .navcount{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:.78rem; color:var(--muted);
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:8px 16px;
+    font-variant-numeric:tabular-nums;
+  }
+  .progress{
+    position:fixed; top:0; left:0; height:3px; background:var(--mint);
+    z-index:60; transition:width .25s ease;
+    box-shadow:0 0 12px rgba(111,224,207,.6);
+  }
+
+  @media (max-width:760px){
+    .slide{ padding:88px 20px 110px; }
+    h1{ font-size:12vw !important; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    * { animation:none !important; transition:none !important; }
+  }
+</style>
+
+<div class="progress" id="progress"></div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 : TITLE -->
+  <section class="slide">
+    <div class="slide-inner" style="align-items:center; text-align:center; gap:min(20px, 2vh);">
+      <span class="eyebrow">Secure Customer Migration Control Plane</span>
+      <h1 style="font-size:clamp(2.8rem, 9vw, 7rem); line-height:.86; background:linear-gradient(120deg,#eef6f4,var(--mint) 70%); -webkit-background-clip:text; background-clip:text; color:transparent;">ProtageOps</h1>
+      <p style="max-width:44ch; color:var(--muted); font-size:clamp(.9rem, 1.6vw, 1.15rem);">Deterministic field mapping, a required human approval gate, and a mascot who actually eats your bad data.</p>
+      <img src="assets/monster-scan-complete.png" alt="ProtageOps mascot, arms up after a clean scan" style="height:min(160px, 20vh); width:auto; filter:drop-shadow(0 0 40px rgba(111,224,207,.25));">
+      <div class="mono" style="color:var(--muted); font-size:.8rem; letter-spacing:.08em;">ROCKETRIDE &nbsp;·&nbsp; HOTDATA &nbsp;·&nbsp; HYDRADB &nbsp;·&nbsp; COGNEE &nbsp;·&nbsp; MODIQO ROTE &nbsp;·&nbsp; SNYK &nbsp;·&nbsp; OPENAI</div>
+    </div>
+  </section>
+
+  <!-- 2 : PROBLEM -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="eyebrow">Why this exists</span>
+      <h1 style="font-size:clamp(2.2rem, 5.2vw, 4.2rem);">Every migration<br>starts from zero.</h1>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:8px;">
+        <div class="card">
+          <div class="mono" style="color:var(--bad); font-size:.75rem; margin-bottom:10px;">01 &nbsp;GUESSWORK</div>
+          <p style="font-weight:600; margin-bottom:8px;">Field mapping is a guess.</p>
+          <p style="color:var(--muted); font-size:.92rem;">A vendor sends <span class="mono">cust_id</span>, <span class="mono">full_nm</span>, <span class="mono">email_addr</span> — someone eyeballs it against your schema and hopes.</p>
+        </div>
+        <div class="card">
+          <div class="mono" style="color:var(--bad); font-size:.75rem; margin-bottom:10px;">02 &nbsp;EXPOSURE</div>
+          <p style="font-weight:600; margin-bottom:8px;">PII sits in plain view.</p>
+          <p style="color:var(--muted); font-size:.92rem;">Raw emails and phone numbers show up in review screens nobody meant to expose them on.</p>
+        </div>
+        <div class="card">
+          <div class="mono" style="color:var(--bad); font-size:.75rem; margin-bottom:10px;">03 &nbsp;AMNESIA</div>
+          <p style="font-weight:600; margin-bottom:8px;">Nothing is remembered.</p>
+          <p style="color:var(--muted); font-size:.92rem;">The same vendor's next file gets mapped from scratch, again, by whoever's on call.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 : WORKFLOW -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="eyebrow">How it works</span>
+      <h1 style="font-size:clamp(2.2rem, 5.2vw, 4.2rem);">Eight steps.<br>One approval gate.</h1>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;">
+        <!-- steps -->
+        <div class="card mono" style="padding:14px 18px; font-size:.85rem; flex:1 1 auto;"><span style="color:var(--mint);">01</span> Upload</div>
+        <div class="mono" style="align-self:center; color:var(--muted);">→</div>
+        <div class="card mono" style="padding:14px 18px; font-size:.85rem; flex:1 1 auto;"><span style="color:var(--mint);">02</span> Profile &amp; Secure</div>
+        <div class="mono" style="align-self:center; color:var(--muted);">→</div>
+        <div class="card mono" style="padding:14px 18px; font-size:.85rem; flex:1 1 auto;"><span style="color:var(--mint);">03</span> Recall</div>
+        <div class="mono" style="align-self:center; color:var(--muted);">→</div>
+        <div class="card mono" style="padding:14px 18px; font-size:.85rem; flex:1 1 auto;"><span style="color:var(--mint);">04</span> Map</div>
+        <div class="mono" style="align-self:center; color:var(--muted);">→</div>
+        <div class="card mono" style="padding:14px 18px; font-size:.85rem; flex:1 1 auto; border-color:var(--amber); background:rgba(242,167,101,.07);"><span style="color:var(--amber);">05</span> Approve</div>
+        <div class="mono" style="align-self:center; color:var(--muted);">→</div>
+        <div class="card mono" style="padding:14px 18px; font-size:.85rem; flex:1 1 auto;"><span style="color:var(--mint);">06</span> Migrate</div>
+        <div class="mono" style="align-self:center; color:var(--muted);">→</div>
+        <div class="card mono" style="padding:14px 18px; font-size:.85rem; flex:1 1 auto;"><span style="color:var(--mint);">07</span> Reconcile</div>
+        <div class="mono" style="align-self:center; color:var(--muted);">→</div>
+        <div class="card mono" style="padding:14px 18px; font-size:.85rem; flex:1 1 auto;"><span style="color:var(--mint);">08</span> Learn</div>
+      </div>
+      <p class="mono" style="color:var(--muted); font-size:.82rem; margin-top:6px;">// every step below is a real API call against a real vendor SDK — nothing here is mocked</p>
+    </div>
+  </section>
+
+  <!-- 4 : MASCOT / LIVE -->
+  <section class="slide">
+    <div class="slide-inner" style="display:grid; grid-template-columns:1.1fr 1fr; gap:48px; align-items:center;">
+      <div>
+        <span class="eyebrow">Watch it work</span>
+        <h1 style="font-size:clamp(2rem, 4.8vw, 3.8rem); margin-top:10px;">The monster eats every record.</h1>
+        <p style="color:var(--muted); font-size:1.05rem; margin-top:18px; max-width:46ch;">Each row gets chomped, validated, and sorted live — straight into the modern database or the quarantine bin, one chip flying at a time.</p>
+        <div style="display:flex; gap:10px; margin-top:22px;">
+          <span class="pill good"><span class="dot"></span>Modern DB</span>
+          <span class="pill" style="border-color:var(--bad); color:var(--bad); background:rgba(242,162,171,.09);">Quarantine</span>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:center;">
+        <img src="assets/monster-eating.png" alt="Mascot eating a cookie, representing record ingestion" style="height:min(280px, 42vh); width:auto; filter:drop-shadow(0 0 40px rgba(111,224,207,.2));">
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 : HUMAN APPROVAL -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="eyebrow">The gate</span>
+      <h1 style="font-size:clamp(2.2rem, 5.2vw, 4.2rem);">No field migrates<br>without a yes.</h1>
+      <p style="color:var(--muted); font-size:1.05rem; max-width:60ch; margin-top:6px;">Every suggested mapping needs an explicit decision — tracked as two separate flags per field, not one dropdown. Reject a column and it's excluded from the run entirely, no matter what's still selected.</p>
+      <div class="card mono" style="margin-top:18px; font-size:.85rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 4px; border-bottom:1px solid var(--line);">
+          <span>email_addr <span style="color:var(--muted);">→</span> email</span>
+          <span style="display:flex; gap:8px;">
+            <span class="pill good"><span class="dot"></span>Approved</span>
+          </span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 4px;">
+          <span>ssn_full <span style="color:var(--muted);">→</span> <span style="color:var(--muted);">— ignore —</span></span>
+          <span style="display:flex; gap:8px;">
+            <span class="pill" style="border-color:var(--bad); color:var(--bad); background:rgba(242,162,171,.09);">Rejected</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 : SPONSOR STACK -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="eyebrow">Sponsor integrations — all live</span>
+      <h1 style="font-size:clamp(2.2rem, 5.2vw, 4.2rem);">Seven tools.<br>Zero stubs.</h1>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:10px;">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><strong>Cognee</strong><span class="pill good"><span class="dot"></span>Connected</span></div>
+          <p style="color:var(--muted); font-size:.85rem;">Stores and recalls mapping memory across migrations.</p>
+        </div>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><strong>HydraDB</strong><span class="pill good"><span class="dot"></span>Connected</span></div>
+          <p style="color:var(--muted); font-size:.85rem;">Real ingest + semantic search over migration history.</p>
+        </div>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><strong>HotData</strong><span class="pill good"><span class="dot"></span>Connected</span></div>
+          <p style="color:var(--muted); font-size:.85rem;">Live SQL profiling on their DataFusion engine, one query.</p>
+        </div>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><strong>RocketRide</strong><span class="pill good"><span class="dot"></span>Connected</span></div>
+          <p style="color:var(--muted); font-size:.85rem;">Hosted AI pipeline — the LLM call runs on their infra.</p>
+        </div>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><strong>Modiqo Rote</strong><span class="pill good"><span class="dot"></span>Connected</span></div>
+          <p style="color:var(--muted); font-size:.85rem;">The real <span class="mono">rote</span> CLI — authenticated identity.</p>
+        </div>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><strong>Snyk</strong><span class="pill good"><span class="dot"></span>Connected</span></div>
+          <p style="color:var(--muted); font-size:.85rem;">Real CLI dependency vulnerability scan.</p>
+        </div>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><strong>OpenAI</strong><span class="pill good"><span class="dot"></span>Connected</span></div>
+          <p style="color:var(--muted); font-size:.85rem;">Drafts every field-mapping suggestion.</p>
+        </div>
+        <div class="card" style="display:flex; align-items:center; justify-content:center; border-style:dashed;">
+          <span class="mono" style="color:var(--muted); font-size:.8rem; text-align:center;">7 / 7<br>live</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 : PROOF -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="eyebrow">How we know it's real</span>
+      <h1 style="font-size:clamp(2.2rem, 5.2vw, 4.2rem);">We verified<br>every claim.</h1>
+      <div class="card mono" style="font-size:.86rem; line-height:2.1; margin-top:8px; color:#c9dedb;">
+        <div><span style="color:var(--mint);">$</span> execute_sql("SELECT * FROM staging …") <span class="mono" style="color:var(--muted);">// runs on HotData's live engine, not a local stand-in</span></div>
+        <div><span style="color:var(--mint);">$</span> context.ingest() → context.query() <span class="mono" style="color:var(--muted);">// round-tripped through HydraDB's real semantic index</span></div>
+        <div><span style="color:var(--mint);">$</span> client.use() → client.chat() <span class="mono" style="color:var(--muted);">// answered inside a RocketRide-hosted pipeline</span></div>
+        <div><span style="color:var(--mint);">$</span> rote whoami <span style="color:var(--good);">→ ok: team account</span> <span class="mono" style="color:var(--muted);">// Modiqo Rote's own CLI</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 : SECURITY -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="eyebrow">AI SEC</span>
+      <h1 style="font-size:clamp(2.2rem, 5.2vw, 4.2rem);">Trust,<br>by construction.</h1>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:10px;">
+        <div class="card">
+          <p style="font-weight:600; margin-bottom:8px; color:var(--mint);">PII Masked</p>
+          <p style="color:var(--muted); font-size:.9rem;">Previews never show a raw email or phone number.</p>
+        </div>
+        <div class="card">
+          <p style="font-weight:600; margin-bottom:8px; color:var(--mint);">Source Read-Only</p>
+          <p style="color:var(--muted); font-size:.9rem;">The vendor's file is never mutated, only read.</p>
+        </div>
+        <div class="card">
+          <p style="font-weight:600; margin-bottom:8px; color:var(--mint);">Human Approval Required</p>
+          <p style="color:var(--muted); font-size:.9rem;">No silent auto-migration — ever.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 : ROADMAP -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="eyebrow">Roadmap</span>
+      <h1 style="font-size:clamp(2.2rem, 5.2vw, 4.2rem);">Where this<br>goes next.</h1>
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px; max-width:70ch;">
+        <div class="card" style="display:flex; gap:14px; align-items:baseline;"><span class="mono" style="color:var(--amber);">→</span><p>Load dropped files straight into HotData through a RocketRide-hosted pipeline.</p></div>
+        <div class="card" style="display:flex; gap:14px; align-items:baseline;"><span class="mono" style="color:var(--amber);">→</span><p>Deterministic replay of a known mapping via Modiqo Rote.</p></div>
+        <div class="card" style="display:flex; gap:14px; align-items:baseline;"><span class="mono" style="color:var(--amber);">→</span><p>Multi-file, multi-vendor batch migrations in a single run.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 : CLOSING -->
+  <section class="slide">
+    <div class="slide-inner" style="align-items:center; text-align:center; gap:22px;">
+      <img src="assets/monster-scan-complete.png" alt="ProtageOps mascot" style="height:min(130px, 18vh); width:auto; opacity:.92;">
+      <h1 style="font-size:clamp(2.4rem, 6vw, 4.6rem);">Let's see it live.</h1>
+      <p class="mono" style="color:var(--muted); font-size:.85rem; letter-spacing:.06em;">PROTAGEOPS</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="navbar">
+  <button class="navbtn" id="prevBtn" aria-label="Previous slide">‹</button>
+  <span class="navcount" id="counter">01 / 10</span>
+  <button class="navbtn" id="nextBtn" aria-label="Next slide">›</button>
+</div>
+
+<script>
+  const deck = document.getElementById('deck');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function currentIndex(){
+    let idx = 0;
+    let best = Infinity;
+    slides.forEach((s,i)=>{
+      const d = Math.abs(s.getBoundingClientRect().top);
+      if(d < best){ best = d; idx = i; }
+    });
+    return idx;
+  }
+
+  function update(){
+    const idx = currentIndex();
+    counter.textContent = `${pad(idx+1)} / ${pad(slides.length)}`;
+    progress.style.width = `${((idx+1)/slides.length)*100}%`;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === slides.length-1;
+  }
+
+  function goTo(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides[i].scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  deck.addEventListener('scroll', ()=>{ requestAnimationFrame(update); }, {passive:true});
+  prevBtn.addEventListener('click', ()=> goTo(currentIndex()-1));
+  nextBtn.addEventListener('click', ()=> goTo(currentIndex()+1));
+
+  window.addEventListener('keydown', (e)=>{
+    if(['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)){ e.preventDefault(); goTo(currentIndex()+1); }
+    if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); goTo(currentIndex()-1); }
+  });
+
+  update();
+</script>

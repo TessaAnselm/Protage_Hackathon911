@@ -40,8 +40,16 @@
         "reasoning": "Direct mapping based on naming convention.",
         "approved": true,
         "rejected": false
+      },
+      {
+        "source_field": "country_cd",
+        "target_field": "country",
+        "confidence": 1,
+        "reasoning": "Direct mapping based on naming convention.",
+        "approved": true,
+        "rejected": false
       }
     ],
-    "captured_at": 1789166512.991724
+    "captured_at": 1789171542.0443578
   }
 ]
