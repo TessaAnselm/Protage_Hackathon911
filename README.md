@@ -25,7 +25,7 @@ HotData, RocketRide, and Modiqo Rote** — all shown `Connected` before a file
 is even chosen. (Snyk runs as a separate CLI/security-scan endpoint and
 OpenAI's key is used silently during Map, so neither gets a tile here.)
 
-![Upload screen with pipeline stages and sponsor adapters](images/Screenshot%202026-09-11%20at%204.21.23%20PM.png)
+![Upload screen with pipeline stages and sponsor adapters](images/upload-pipeline-overview.png)
 
 **2. Recall → three sponsor tools query memory at once.** Once a file loads,
 this is the exact moment `backend/main.py`'s `/recall` step fires off
@@ -38,9 +38,20 @@ preview** redacts emails and phone numbers on screen — full values are only
 used internally once Migrate actually runs — so a human can sanity-check row
 shapes without seeing raw customer PII.
 
-![Masked preview of the uploaded CSV during the Recall step](images/Screenshot%202026-09-11%20at%2011.26.06%20PM.png)
+![Masked preview of the uploaded CSV during the Recall step](images/recall-masked-preview.png)
 
-**3. Migrate & Reconcile → the write-back, then RocketRide answers for it.**
+**3. Map → OpenAI drafts it, a human decides.** `llm_adapter.suggest_mappings`
+(**OpenAI**, via `LLM_API_KEY`) proposes a target field, a confidence score,
+and a plain-language reason for every source column — `email_addr → email`
+at 90% because it's "a close match, but requires format validation,"
+`phone_num → phone` at 100% on naming convention alone. Nothing migrates from
+this screen: each row needs an explicit **Approve** or **Reject**, which is
+the human-approval-gate promise from the top of this README actually
+rendered as a button, not a config flag.
+
+![LLM-suggested field mappings awaiting per-field human approval](images/map-approve-fields.png)
+
+**4. Migrate & Reconcile → the write-back, then RocketRide answers for it.**
 After approval, rows split deterministically into the modern DB or a
 quarantine bin (`4 loaded / 3 quarantined out of 7 source rows`, with a
 specific reason attached to every quarantined row), and behind the scenes
@@ -52,7 +63,7 @@ pipeline (`chat → llm_openai → response`) running on RocketRide's own
 infrastructure, grounded in this run's reconciliation report, not a local
 LLM call — so "Why was row 3 quarantined?" gets an exact, sourced answer.
 
-![Migrate, reconcile, and RocketRide-backed Q&A on the finished run](images/Screenshot%202026-09-11%20at%204.23.41%20PM.png)
+![Migrate, reconcile, and RocketRide-backed Q&A on the finished run](images/migrate-reconcile-ask.png)
 
 ## Demo Video
 
