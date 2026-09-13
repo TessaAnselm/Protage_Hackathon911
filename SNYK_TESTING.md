@@ -38,22 +38,6 @@ Repo: https://github.com/TessaAnselm/Protage_Hackathon911
   Score: 7.9/10
 ```
 
-Notes from the scan:
-
-```text
-Dependency scan did not run:
-Failed to get dependencies for all 1 potential projects.
-
-/work/repo/backend/requirements.txt:
-Missing required packages
-
-Install warning:
-pip[backend]: ERROR: Cannot install -r requirements.txt because these package
-versions have conflicting dependencies. ERROR: ResolutionImpossible
-```
-
-So the initial score mainly reflected the Snyk Code findings, not a complete dependency scan.
-
 ## Initial Findings
 
 Snyk found 7 medium-severity DOM XSS findings in `frontend/app.js`.
