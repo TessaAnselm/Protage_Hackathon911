@@ -1,12 +1,12 @@
 # RocketRide Integration Setup
 
-Of the 7 sponsor tools in this project, **RocketRide was the hardest to wire
-up** — its public docs only describe the default `https://cloud.rocketride.ai/`
-endpoint, but the API key given for this hackathon only authenticates against
-a staging endpoint (`https://staging.rocketride.ai/`) that isn't documented
-anywhere. The only way to find the right URL and auth pattern was to build a
-throwaway pipeline in RocketRide's own Pipeline Builder UI and read its
-generated endpoint config. This doc walks through that process.
+RocketRide was one of seven sponsor tools integrated into ProtageOps. For the hackathon, we were given access to a pre-release RocketRide staging environment, so the integration path differed from the publicly documented RocketRide Cloud setup.
+
+The hackathon credentials were scoped to RocketRide's staging environment rather than the public cloud endpoint. Because this staging configuration was not yet part of the public documentation, we needed to determine the correct endpoint and authentication pattern directly from the platform.
+
+To do that, we created a test pipeline in RocketRide's Pipeline Builder, added a Webhook source, and inspected the generated Endpoint Configuration. This exposed the staging endpoint, authorization values, and request format needed to connect ProtageOps successfully.
+
+This document captures that discovery and integration process, including how we verified the configuration and reproduced the working pipeline in the application.
 
 **Reading the screenshots below:** a solid red box hides a sensitive value
 (URL path, key, or token) that was blacked out before these were committed —
