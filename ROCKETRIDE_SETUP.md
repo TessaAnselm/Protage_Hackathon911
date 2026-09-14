@@ -1,6 +1,6 @@
 # RocketRide Integration Setup
 
-RocketRide was one of seven sponsor tools integrated into ProtageOps. For the hackathon, we were given access to a pre-release RocketRide staging environment, so the integration path differed from the publicly documented RocketRide Cloud setup.
+RocketRide was one of seven sponsor tools integrated into ProtageOps. For the hackathon, we were given access to a pre-release RocketRide staging environment (staging.rocketride.ai), so the integration path differed from the publicly documented RocketRide Cloud (cloud.rocketride.ai) setup.
 
 The hackathon credentials were scoped to RocketRide's staging environment rather than the public cloud endpoint. Because this staging configuration was not yet part of the public documentation, we needed to determine the correct endpoint and authentication pattern directly from the platform.
 
